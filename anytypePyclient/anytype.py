@@ -52,15 +52,16 @@ class Anytype(ApiBase1):
     Pagination is controlled via offset and limit query parameters to facilitate lazy loading in client UIs. 
     The response returns a unified list of matched objects with their metadata and properties.
     """
-    #def searchGlobal(self, body: SearchCondition, offset:int=0, limit:int=100) -> ObjectSchema:
-    #    orig = self._endpoint.search_global(body=body, offset=offset, limit=limit)
-    #    for dt in orig.data:
-    #        for prop in dt["properties"]:
-    #            prop["space_id"]=dt["space_id"]
-    #            
-    #        if dt["type"]:
-    #            dt["type"]["space_id"]=dt["space_id"]
-    #            for prop2 in dt["type"]["properties"]:
-    #                prop2["space_id"] = dt["space_id"]
-    #    return ObjectSchema(**orig)
+    def searchGlobal(self, body: SearchCondition, offset:int=0, limit:int=100) -> ObjectSchema:
+        orig = self._endpoint.search_global(body=body, offset=offset, limit=limit)
+        print(orig)
+        for dt in orig["data"]:
+            for prop in dt["properties"]:
+                prop["space_id"]=dt["space_id"]
+                
+            if dt["type"]:
+                dt["type"]["space_id"]=dt["space_id"]
+                for prop2 in dt["type"]["properties"]:
+                    prop2["space_id"] = dt["space_id"]
+        return ObjectSchema(**orig)
         

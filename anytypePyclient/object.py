@@ -7,6 +7,8 @@ from .type import Type
 PropertyValue_Bound = TypeVar("PropertyValue_Bound", bound=PropertyValue)
 
 class Object(ApiBase):
+    list_id: Optional[str] = ""
+    
     archived:bool
     icon:Optional[Icon_Bound] = None
     id:str

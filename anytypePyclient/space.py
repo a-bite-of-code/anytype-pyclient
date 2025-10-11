@@ -1,12 +1,12 @@
 from pydantic import BaseModel, Field
 from typing import Optional, TypeVar
-from .apimodels import Icon, Schema, SearchCondition, ApiBase1, Icon_Bound
+from .apimodels import Icon, Schema, SearchSort, SearchCondition, ApiBase1, Icon_Bound, ObjectCreate, ObjectUpdate
 from .api import AnytypePyClient
 from .object import ObjectSchema, Object
 from .type import TypeSchema, Type
 from .property import Property, PropertySchema
 from .member import Member, MemberSchema
-
+from .list import ListSchema
 
 class Space(ApiBase1):
     description:Optional[str]
@@ -24,17 +24,34 @@ class Space(ApiBase1):
       that match the query. 
     This allows clients to implement space‑specific filtering without having to process extraneous results.
     """
-    #def searchSpace(self, body: SearchCondition, offset:int=0, limit:int=100) -> ObjectSchema:
-    #    orig = self._endpoint.search_space(space_id=self.id, body=body, offset=offset, limit=limit)
-    #    for dt in orig.data:
-    #        for prop in dt["properties"]:
-    #            prop["space_id"]=dt["space_id"]
-    #            
-    #        if dt["type"]:
-    #            dt["type"]["space_id"]=dt["space_id"]
-    #            for prop2 in dt["type"]["properties"]:
-    #                prop2["space_id"] = dt["space_id"]
-    #    return ObjectSchema(**orig)
+    def searchSpace(self, body: SearchCondition, offset:int=0, limit:int=100) -> ObjectSchema:
+        orig = self._endpoint.search_space(space_id=self.id, body=body, offset=offset, limit=limit)
+        for dt in orig["data"]:
+            for prop in dt["properties"]:
+                prop["space_id"]=dt["space_id"]
+                
+            if dt["type"]:
+                dt["type"]["space_id"]=dt["space_id"]
+                for prop2 in dt["type"]["properties"]:
+                    prop2["space_id"] = dt["space_id"]
+        return ObjectSchema(**orig)
+        
+    """
+    Get list to retrieve views for.
+    Limited to types: ['collection', 'set']
+    """
+    def getLists(self, name: str, offset:int=0, limit:int=1000) -> ListSchema:
+        body=SearchCondition(query=name, sort=SearchSort(direction="asc", property_key="last_modified_date"), types=['collection', 'set'])
+        orig = self._endpoint.search_space(space_id=self.id, body=body, offset=offset, limit=limit)
+        for dt in orig["data"]:
+            for prop in dt["properties"]:
+                prop["space_id"]=dt["space_id"]
+                
+            if dt["type"]:
+                dt["type"]["space_id"]=dt["space_id"]
+                for prop2 in dt["type"]["properties"]:
+                    prop2["space_id"] = dt["space_id"]
+        return ListSchema(**orig)
         
     """
     Returns a paginated list of members belonging to the specified space. 
@@ -152,6 +169,26 @@ class Space(ApiBase1):
         for prop in orig["properties"]:
             prop["space_id"]=self.id
         return Type(**orig)
+        
+    """
+    Creates a new object in the specified space using a JSON payload. 
+    The creation process is subject to rate limiting. 
+    The payload must include key details such as the object name, icon, description, body content (which may support Markdown), 
+      source URL (required for bookmark objects), template identifier, and the type_key (which is the non-unique identifier of 
+      the type of object to create). Post-creation, additional operations (like setting featured properties or fetching bookmark 
+      metadata) may occur. 
+    The endpoint then returns the full object data, ready for further interactions.
+    """
+    def createObject(self, body: ObjectCreate) -> Object:
+        orig = self._endpoint.create_object(space_id=self.id, obj=body)
+        orig["space_id"]=self.id
+        for prop in orig["properties"]:
+            prop["space_id"]=self.id
+        if orig["type"]:
+            if orig["type"]["properties"]:
+                for prop2 in orig["type"]["properties"]:
+                    prop2["space_id"]=self.id
+        return Object(**orig)
         
 class SpaceSchema(Schema):
     data:list[Space]

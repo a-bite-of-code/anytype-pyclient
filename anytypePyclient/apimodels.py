@@ -10,17 +10,21 @@ class ApiBase(ApiBase1):
     space_id: str
 
 class Icon(BaseModel):
-    pass
+    format: str
+    emoji: Optional[str]=""
+    file: Optional[str]=""
+    color: Optional[str]=""
+    name: Optional[str]=""
     
-class EmojiIcon(Icon):
+class EmojiIcon(BaseModel):
     format: Literal["emoji"] = "emoji"
     emoji: str
     
-class FileIcon(Icon):
+class FileIcon(BaseModel):
     format: Literal["file"] = "file"
     file:str
     
-class NamedIcon(Icon):
+class NamedIcon(BaseModel):
     format: Literal["icon"] = "icon"
     color:str
     name:str
@@ -133,7 +137,7 @@ class PhonePropertyLinkValue(PropertyLinkValue):
 class ObjectsPropertyLinkValue(PropertyLinkValue):
     objects:list[str]
     
-PropertyLinkValue_Bound = Annotated[Union[TextPropertyLinkValue, NumberPropertyLinkValue, SelectPropertyLinkValue, MultiSelectPropertyLinkValue, DatePropertyLinkValue, FilesPropertyLinkValue, CheckboxPropertyLinkValue, URLPropertyLinkValue, EmailPropertyLinkValue, PhonePropertyLinkValue, ObjectsPropertyLinkValue]]
+PropertyLinkValue_Bound = TypeVar("PropertyLinkValue_Bound", bound=PropertyLinkValue)
 
 class ObjectCreate(BaseModel):
     body:Optional[str] = None

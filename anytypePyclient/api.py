@@ -21,7 +21,7 @@ class AnytypePyClient:
         cleaned_dump = {k: v for k, v in body.model_dump().items() if v is not None}
         payload = json.dumps(cleaned_dump)
         params = {"offset":offset,"limit":limit}
-        resp = self.api_endpoint.requestApi("GET", url=api, data=payload, params=params)
+        resp = self.api_endpoint.requestApi("POST", url=api, data=payload, params=params)
         return resp.json()
     """
     space_id    string    required
@@ -32,7 +32,7 @@ class AnytypePyClient:
         cleaned_dump = {k: v for k, v in body.model_dump().items() if v is not None}
         payload = json.dumps(cleaned_dump)
         params = {"offset":offset,"limit":limit}
-        resp = self.api_endpoint.requestApi("GET", url=api, data=payload, params=params)
+        resp = self.api_endpoint.requestApi("POST", url=api, data=payload, params=params)
         return resp.json()
     
     #Spaces
@@ -87,7 +87,7 @@ class AnytypePyClient:
     list_id    string    required
     The ID of the list to which objects will be added; must be retrieved from SearchSpace endpoint with types: ['collection', 'set']
     """
-    def adad_objects_to_list(self, space_id: str, list_id: str, objectIds: list[str]) -> str:
+    def add_objects_to_list(self, space_id: str, list_id: str, objectIds: list[str]) -> str:
         api = f"spaces/{space_id}/lists/{list_id}/objects" 
         payload = json.dumps(objectIds)
         resp = self.api_endpoint.requestApi("POST", url=api, data=payload, params=params)

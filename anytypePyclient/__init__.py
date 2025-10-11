@@ -6,7 +6,9 @@ from .space import Space, SpaceSchema
 from .tag import Tag, TagSchema
 from .template import Template, TemplateSchema
 from .type import Type, TypeSchema
-from .listview import AnyList, ListSchema
+from .list import ATList, ListSchema
+from .view import View, ViewSchema
+from .block import (Block, File, Text)
 from .apimodels import (SpaceCreate,
                         SpaceUpdate,
                         ObjectCreate,
@@ -22,6 +24,7 @@ from .apimodels import (SpaceCreate,
                         SearchSort,
                         Pagination,
                         
+                        Icon,
                         NamedIcon,
                         FileIcon,
                         EmojiIcon,

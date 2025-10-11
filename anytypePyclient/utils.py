@@ -23,7 +23,7 @@ if not apiVersion:
 class ApiEndPoint:
     def __init__(self) -> None:
         self._baseUrl = apiUrl
-        self._headers = {"Authorization": f"Bearer {apiKey}", "Anytype-Version": apiVersion, "Content-Type": "application/json"}
+        self._headers = {"Authorization": f"Bearer {apiKey}", "Anytype-Version": f"{apiVersion}", "Content-Type": "application/json"}
         
     def requestApi(self, method, url, data={}, params={}) -> Any:
         targetUrl = f"{self._baseUrl}/{url}"
