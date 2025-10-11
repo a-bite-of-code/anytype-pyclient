@@ -1,10 +1,9 @@
 from pydantic import BaseModel
 from typing import Optional, TypeVar
-from .apimodels import Schema, Icon
+from .apimodels import Schema, Icon, ApiBase, Icon_Bound
 
-Icon_Bound = TypeVar("Icon_Bound", bound=Icon)
 
-class Member(BaseModel):
+class Member(ApiBase):
     global_name: str
     icon: Optional[Icon_Bound] = None
     id: str

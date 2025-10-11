@@ -1,10 +1,8 @@
 from pydantic import BaseModel
 from .api import AnytypePyClient
-from .apimodels import Schema
+from .apimodels import Schema, ApiBase
 
 class AnyList(BaseModel):
-    _endpoint:AnytypePyClient = AnytypePyClient()
-    
     id: str
     name: str
     

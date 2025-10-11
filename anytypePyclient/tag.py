@@ -1,12 +1,16 @@
 from pydantic import BaseModel
 from .api import AnytypePyClient
-from .apimodels import Schema
+from .apimodels import Schema, ApiBase
 
-class Tag(BaseModel):
-    _endpoint:AnytypePyClient = AnytypePyClient()
+class Tag(ApiBase):
+    property_id: str
     
+    color: str
+    id: str
+    key: str
+    name: str
+    object: str
     
-
 
 class TagSchema(Schema):
     data: list[Tag]

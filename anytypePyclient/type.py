@@ -1,15 +1,10 @@
 from pydantic import BaseModel, Field
 from typing import TypeVar, Optional
-from .apimodels import Icon, Schema
-from .api import AnytypePyClient
-from .template import Template, TemplateSchema
+from .apimodels import Icon, Schema, ApiBase, Icon_Bound
 from .property import Property
 
-Icon_Bound = TypeVar("Icon_Bound", bound=Icon)
 
-
-class Type(BaseModel):
-    _endpoint: AnytypePyClient =AnytypePyClient()
+class Type(ApiBase):
     
     archived: bool
     icon: Optional[Icon_Bound] = None
@@ -27,8 +22,12 @@ class Type(BaseModel):
     Each template record contains its identifier, name, and icon, so that clients can offer users a selection 
       of templates when creating objects.
     """
-    def listTemplates(self, offset:int=0, limit:int=100) -> TemplateSchema:
+    def listTemplates(self, offset:int=0, limit:int=100) -> "TemplateSchema":
+        from .template import TemplateSchema
         orig = self._endpoint.list_templates(space_id=self.space_id, type_id=self.id, offset=offset, limit=limit)
+        for dt in orig.data:
+            if dt["type"]:
+                dt["type"]["space_id"]=self.spaec_id
         return TemplateSchema(**orig)
         
     """
@@ -36,7 +35,8 @@ class Type(BaseModel):
     The response provides the template’s identifier, name, icon, and any other relevant metadata. 
     This endpoint is useful when a client needs to preview or apply a template to prefill object creation fields.
     """
-    def getTemplate(self, template_id:str) -> Template:
+    def getTemplate(self, template_id:str) -> "Template":
+        from .template import Template
         orig = self._endpoint.get_template(space_id=self.space_id, type_id=self.id)
         return Template(**orig)
         

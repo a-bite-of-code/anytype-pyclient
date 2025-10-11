@@ -1,18 +1,14 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, TypeVar
-from .apimodels import Icon, Schema, SearchCondition
+from .apimodels import Icon, Schema, SearchCondition, ApiBase1, Icon_Bound
 from .api import AnytypePyClient
 from .object import ObjectSchema, Object
 from .type import TypeSchema, Type
 from .property import Property, PropertySchema
 from .member import Member, MemberSchema
 
-Icon_Bound = TypeVar("Icon_Bound", bound=Icon)
 
-
-class Space(BaseModel):
-    _endpoint:AnytypePyClient = AnytypePyClient()
-    
+class Space(ApiBase1):
     description:Optional[str]
     gateway_url:str
     icon: Optional[Icon_Bound]
@@ -28,9 +24,18 @@ class Space(BaseModel):
       that match the query. 
     This allows clients to implement space‑specific filtering without having to process extraneous results.
     """
-    def searchSpace(self, body: SearchCondition, offset:int=0, limit:int=100) -> ObjectSchema:
-        orig = self._endpoint.search_space(space_id=self.id, body=body, offset=offset, limit=limit)
-        return ObjectSchema(**orig)
+    #def searchSpace(self, body: SearchCondition, offset:int=0, limit:int=100) -> ObjectSchema:
+    #    orig = self._endpoint.search_space(space_id=self.id, body=body, offset=offset, limit=limit)
+    #    for dt in orig.data:
+    #        for prop in dt["properties"]:
+    #            prop["space_id"]=dt["space_id"]
+    #            
+    #        if dt["type"]:
+    #            dt["type"]["space_id"]=dt["space_id"]
+    #            for prop2 in dt["type"]["properties"]:
+    #                prop2["space_id"] = dt["space_id"]
+    #    return ObjectSchema(**orig)
+        
     """
     Returns a paginated list of members belonging to the specified space. 
     Each member record includes the member’s profile ID, name, icon (which may be derived from an emoji or image), 
@@ -39,7 +44,10 @@ class Space(BaseModel):
     access rights.
     """
     def listMembers(self, offset:int=0, limit:int=100) -> MemberSchema:
-        return self._endpoint.list_members(space_id=self.id, offset=offset, limit=limit)
+        orig = self._endpoint.list_members(space_id=self.id, offset=offset, limit=limit)
+        for dt in orig["data"]:
+            dt["space_id"]=self.id
+        return MemberSchema(**orig)
         
     """
     Fetches detailed information about a single member within a space. 
@@ -49,7 +57,9 @@ class Space(BaseModel):
       member-specific information in collaborative environments.
     """
     def getMember(self, member_id: str) -> Member:
-        return  self._endpoint.get_member(space_id=self.id, member_id=member_id)
+        orig = self._endpoint.get_member(space_id=self.id, member_id=member_id)
+        orig["space_id"] = self.id
+        return Member(**orig)
         
     """
     ⚠ Warning: Properties are experimental and may change in the next update. ⚠ 
@@ -59,7 +69,10 @@ class Space(BaseModel):
       creating objects.
     """
     def listProperties(self, offset:int=0, limit:int=100) -> PropertySchema:
-        return self._endpoint.list_properteis(space_id=self.id, offset=offset, limit=limit)
+        orig = self._endpoint.list_properties(space_id=self.id, offset=offset, limit=limit)
+        for dt in orig["data"]:
+            dt["space_id"]=self.id
+        return PropertySchema(**orig)
         
     """
     Warning: Properties are experimental and may change in the next update. ⚠ 
@@ -70,6 +83,7 @@ class Space(BaseModel):
     """
     def getProperty(self, property_id:str) -> Property:
         orig = self._endpoint.get_property(space_id=self.id, property_id=property_id)
+        orig["space_id"]=self.id
         return Property(**orig)
         
     """
@@ -81,6 +95,15 @@ class Space(BaseModel):
     """
     def listObjects(self, offset:int=0, limit:int=100) -> ObjectSchema:
         orig = self._endpoint.list_objects(space_id=self.id, offset=offset, limit=limit)
+        for dt in orig["data"]:
+            dt["space_id"]=self.id
+            if dt["type"]:
+                dt["type"]["space_id"]=self.id
+                if dt["type"]["properties"]:
+                    for prop in dt["type"]["properties"]:
+                        prop["space_id"]=self.id
+            for prop2 in dt["properties"]:
+                prop2["space_id"]=self.id
         return ObjectSchema(**orig)
         
     """
@@ -92,6 +115,12 @@ class Space(BaseModel):
     """
     def getObject(self, object_id:str) -> Object:
         orig = self._endpoint.get_obejct(space_id=self.id, object_id=object_id)
+        orig["space_id"] = self.id
+        if orig["type"]:
+            orig["type"]["space_id"]=self.id
+            if orig["type"]["properties"]:
+                for prop in orig["type"]["properties"]:
+                    prop["space_id"] = self.id
         return Object(**orig)
         
     """
@@ -104,6 +133,11 @@ class Space(BaseModel):
     """
     def listTypes(self, offset:int=0, limit:int=100) -> TypeSchema:
         orig = self._endpoint.list_types(space_id=self.id, offset=offset, limit=limit)
+        for dt in orig["data"]:
+            dt["space_id"] = self.id
+            if dt["properties"]:
+                for prop in dt["properties"]:
+                    prop["space_id"]=self.id
         return TypeSchema(**orig)
         
     """
@@ -114,6 +148,9 @@ class Space(BaseModel):
     """
     def getType(self, type_id:str) -> Type:
         orig = self._endpoint.get_type(space_id=self.id, type_id=type_id)
+        orig["space_id"] = self.id
+        for prop in orig["properties"]:
+            prop["space_id"]=self.id
         return Type(**orig)
         
 class SpaceSchema(Schema):

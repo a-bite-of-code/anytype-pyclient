@@ -1,16 +1,14 @@
 from pydantic import BaseModel
 from typing import TypeVar, Optional
 from .api import AnytypePyClient
-from .apimodels import Icon, Schema
+from .apimodels import Icon, Schema, ApiBase, Icon_Bound
 from .property import Property, PropertySchema
+from .type import Type
 
-Icon_Bound = TypeVar("Icon_Bound", bound=Icon)
-
-class Template(BaseModel):
-    _endpoint:AnytypePyClient = AnytypePyClient()
+class Template(ApiBase):
     
     archived:bool
-    icon:Icon_Bound
+    icon:Optional[Icon_Bound]=None
     id:str
     layout:str
     markdown:str
@@ -19,7 +17,7 @@ class Template(BaseModel):
     properteis:list[Property]
     snippet:str
     space_id:str
-    type:object
+    type:Optional[Type] = None
     
 class TemplateSchema(Schema):
     data: list[Template]

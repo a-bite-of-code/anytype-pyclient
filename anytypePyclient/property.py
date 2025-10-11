@@ -1,12 +1,10 @@
 from pydantic import BaseModel
 from typing import Optional, TypeVar
-from .apimodels import Schema, TagCreate
+from .apimodels import Schema, TagCreate, ApiBase
 from .api import AnytypePyClient
 from .tag import Tag, TagSchema
 
-class Property(BaseModel):
-    _endpoint:AnytypePyClient = AnytypePyClient()
-    
+class Property(ApiBase):
     format:str
     id:str
     key:str
@@ -20,8 +18,12 @@ class Property(BaseModel):
       are creating or editing objects. 
     The endpoint also supports pagination through offset and limit parameters.
     """
-    def listTags(self) -> Schema:
-        return self._endpoint.list_tags(space_id=self.space_id, property_id=self.id)
+    def listTags(self) -> TagSchema:
+        orig = self._endpoint.list_tags(space_id=self.space_id, property_id=self.id)
+        for dt in orig.data:
+            dt["property_id"]=self.id
+            dt["space_id"]=self.space_id
+        return TagSchema(**orig)
     
     """
     This endpoint retrieves a tag for a given property id. 
@@ -30,7 +32,10 @@ class Property(BaseModel):
     This is useful for clients to display or when editing a specific tag option.
     """
     def getTag(self, tag_id:str) -> Tag:
-        return self._endpoint.get_tag(space_id=self.space_id, property_id=self.id, tag_id=tag_id)
+        orig = self._endpoint.get_tag(space_id=self.space_id, property_id=self.id, tag_id=tag_id)
+        orig["property_id"]=self.id
+        orig["space_id"]=self.space_id
+        return Tag(**orig)
         
     """
     This endpoint retrieves a tag for a given property id. 
@@ -39,7 +44,10 @@ class Property(BaseModel):
     This is useful for clients to display or when editing a specific tag option.
     """
     def createTag(self, tag:TagCreate) -> Tag:
-        return self._endpoint.create_tag(space_id=self.space_id, property_id=self.id, tag=tag)
+        orig = self._endpoint.create_tag(space_id=self.space_id, property_id=self.id, tag=tag)
+        orig["property_id"]=self.id
+        orig["space_id"]=self.space_id
+        return Tag(**orig)
         
     
 class PropertySchema(Schema):

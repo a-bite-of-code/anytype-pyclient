@@ -15,7 +15,7 @@ if not apiKey:
     raise RuntimeError("env ANYTYPE_API_KEY not set.")
     
 if not apiUrl:
-    apiUrl = "http://127.0.0.1:31009"
+    apiUrl = "http://127.0.0.1:31009/v1"
     
 if not apiVersion:
     apiVersion="2025-05-20"

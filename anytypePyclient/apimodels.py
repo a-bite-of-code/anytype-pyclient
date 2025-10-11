@@ -1,40 +1,50 @@
-from typing import TypeVar, Optional, Any
-from pydantic import BaseModel, root_validator
+from typing import TypeVar, Optional, Any, Literal, Union, Annotated
+from pydantic import BaseModel, root_validator, Field
 from .constants import SortProperty, SortDirection
+from .api import AnytypePyClient
+
+class ApiBase1(BaseModel):
+    _endpoint: AnytypePyClient =AnytypePyClient()
+
+class ApiBase(ApiBase1):
+    space_id: str
 
 class Icon(BaseModel):
-    format:str 
+    pass
     
 class EmojiIcon(Icon):
-    emoji:str
+    format: Literal["emoji"] = "emoji"
+    emoji: str
     
 class FileIcon(Icon):
+    format: Literal["file"] = "file"
     file:str
     
 class NamedIcon(Icon):
+    format: Literal["icon"] = "icon"
     color:str
     name:str
     
-Icon_Bound = TypeVar("Icon_Bound", bound=Icon)
+    
+Icon_Bound = Annotated[Union[EmojiIcon, FileIcon, NamedIcon], Field(discriminator="format")]
 
 class PropertyValue(BaseModel):
-    format:str
     id:str
     key:str
     name:str
     object:str
     
 class TextPropertyValue(PropertyValue):
-    format:str = "text"
+    format:Literal["text"] = "text"
     text:str
     
 class NumberPropertyValue(PropertyValue):
-    format:str = "number"
+    format:Literal["number"] = "number"
     number:int
     
     
 class SelectPropertyValue(PropertyValue):
-    format:str = "select"
+    format:Literal["select"] = "select"
     select: str
     
 class MultiSelectSingleValue(BaseModel):
@@ -45,23 +55,23 @@ class MultiSelectSingleValue(BaseModel):
     object:str
     
 class MultiSelectPropertyValue(PropertyValue):
-    format:str = "multi_select"
+    format:Literal["multi_select"] = "multi_select"
     multi_select: list[MultiSelectSingleValue]
     
 class DatePropertyValue(PropertyValue):
-    format:str = "date"
+    format:Literal["date"] = "date"
     date:str
     
 class FilesPropertyValue(PropertyValue):
-    format:str = "files"
+    format:Literal["files"] = "files"
     files:list[str]
     
 class CheckboxPropertyValue(PropertyValue):
-    format:str = "checkbox"
+    format:Literal["checkbox"] = "checkbox"
     checkbox:bool
     
 class URLPropertyValue(PropertyValue):
-    format:str = "url"
+    format:Literal["url"] = "url"
     url:str
     
 class EmailPropertyValue(PropertyValue):
@@ -69,14 +79,14 @@ class EmailPropertyValue(PropertyValue):
     email:str
     
 class PhonePropertyValue(PropertyValue):
-    format:str = "phone"
+    format:Literal["phone"] = "phone"
     phone:str
     
 class ObjectsPropertyValue(PropertyValue):
-    format:str = "objects"
+    format:Literal["objects"] = "objects"
     objects:list[str]
-    
-PropertyValue_Bound = TypeVar("PropertyValue_Bound", bound=PropertyValue)
+
+PropertyValue_Bound = Annotated[Union[TextPropertyValue, NumberPropertyValue, SelectPropertyValue, MultiSelectPropertyValue, DatePropertyValue, FilesPropertyValue, CheckboxPropertyValue, URLPropertyValue, EmailPropertyValue, PhonePropertyValue, ObjectsPropertyValue], Field(discriminator="format")]
 
 class PropertyCreate(BaseModel):
     format:str
@@ -123,7 +133,7 @@ class PhonePropertyLinkValue(PropertyLinkValue):
 class ObjectsPropertyLinkValue(PropertyLinkValue):
     objects:list[str]
     
-PropertyLinkValue_Bound = TypeVar("PropertyLinkValue_Bound", bound=PropertyLinkValue)
+PropertyLinkValue_Bound = Annotated[Union[TextPropertyLinkValue, NumberPropertyLinkValue, SelectPropertyLinkValue, MultiSelectPropertyLinkValue, DatePropertyLinkValue, FilesPropertyLinkValue, CheckboxPropertyLinkValue, URLPropertyLinkValue, EmailPropertyLinkValue, PhonePropertyLinkValue, ObjectsPropertyLinkValue]]
 
 class ObjectCreate(BaseModel):
     body:Optional[str] = None

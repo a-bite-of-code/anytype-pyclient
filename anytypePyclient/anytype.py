@@ -1,13 +1,11 @@
 import json
 from .api import AnytypePyClient
 from .space import SpaceSchema, Space
-from .apimodels import SpaceCreate, SpaceUpdate, SearchCondition
+from .apimodels import SpaceCreate, SpaceUpdate, SearchCondition, ApiBase1
 from .object import ObjectSchema
 
 
-class Anytype:
-    _endpoint:AnytypePyClient = AnytypePyClient()
-    
+class Anytype(ApiBase1):
     """
     Retrieves a paginated list of all spaces that are accessible by the authenticated user. 
     Each space record contains detailed information such as the space ID, name, 
@@ -54,7 +52,15 @@ class Anytype:
     Pagination is controlled via offset and limit query parameters to facilitate lazy loading in client UIs. 
     The response returns a unified list of matched objects with their metadata and properties.
     """
-    def searchGlobal(self, body: SearchCondition, offset:int=0, limit:int=100) -> ObjectSchema:
-        orig = self._endpoint.search_global(body=body, offset=offset, limit=limit)
-        return ObjectSchema(**orig)
+    #def searchGlobal(self, body: SearchCondition, offset:int=0, limit:int=100) -> ObjectSchema:
+    #    orig = self._endpoint.search_global(body=body, offset=offset, limit=limit)
+    #    for dt in orig.data:
+    #        for prop in dt["properties"]:
+    #            prop["space_id"]=dt["space_id"]
+    #            
+    #        if dt["type"]:
+    #            dt["type"]["space_id"]=dt["space_id"]
+    #            for prop2 in dt["type"]["properties"]:
+    #                prop2["space_id"] = dt["space_id"]
+    #    return ObjectSchema(**orig)
         

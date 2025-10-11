@@ -1,20 +1,17 @@
 from pydantic import BaseModel
 from typing import Optional, TypeVar
-from .apimodels import Schema, PropertyValue, Icon
+from .apimodels import Schema, PropertyValue, Icon, ApiBase, Icon_Bound
 from .api import AnytypePyClient
 from .type import Type
 
-Icon_Bound = TypeVar("Icon_Bound", bound=Icon)
 PropertyValue_Bound = TypeVar("PropertyValue_Bound", bound=PropertyValue)
 
-class Object(BaseModel):
-    _endpoint:AnytypePyClient = AnytypePyClient()
-    
+class Object(ApiBase):
     archived:bool
     icon:Optional[Icon_Bound] = None
     id:str
     layout:str
-    markdown:str
+    markdown:Optional[str] = ""
     name:str
     object:str
     properties:list[PropertyValue_Bound]
