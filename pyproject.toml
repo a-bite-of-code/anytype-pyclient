@@ -1,0 +1,23 @@
+[project]
+name = "anytype-pyclient" 
+version = "0.0.1"
+description = "python client for anytype api."
+readme = "README.md"
+authors = [
+  {name = "MeiJie", email = "jie.mei1@qq.com"},
+]
+license = {text = "MIT"}
+dependencies = [
+    "requests",
+    "pydantic"
+]
+
+[project.urls]
+"Source Code" = "https://github.com/a-bite-of-code/anytype-pyclient" 
+
+[tool.setuptools]
+packages = ["anytype"]
+
+[tool.black]
+line-length = 100
+fast = true
