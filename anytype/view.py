@@ -18,7 +18,7 @@ class View(ApiBase):
     This endpoint helps clients to manage grouped objects (for example, tasks within a list) by returning 
     information for each item of the list.
     """
-    def getObjectsInView(self, offset:int=0, limit:int=100) -> ObjectSchema:
+    def getObjects(self, offset:int=0, limit:int=100) -> ObjectSchema:
         orig = self._endpoint.get_list_objects(space_id=self.space_id, list_id=self.list_id, view_id=self.id, offset=offset, limit=limit)
         for dt in orig["data"]:
             dt["space_id"]=self.space_id

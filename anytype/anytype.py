@@ -52,7 +52,6 @@ class Anytype(ApiBase1):
     """
     def searchGlobal(self, body: SearchCondition, offset:int=0, limit:int=100) -> ObjectSchema:
         orig = self._endpoint.search_global(body=body, offset=offset, limit=limit)
-        print(orig)
         for dt in orig["data"]:
             for prop in dt["properties"]:
                 prop["space_id"]=dt["space_id"]

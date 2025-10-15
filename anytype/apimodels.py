@@ -54,9 +54,16 @@ class NumberPropertyValue(PropertyValue):
     number:int
     
     
+class TagSelect(BaseModel):
+    color:str
+    id:str
+    key:str
+    name:str
+    object:str
+    
 class SelectPropertyValue(PropertyValue):
     format:Literal["select"] = "select"
-    select: str
+    select: Optional[TagSelect] = None
     
 class MultiSelectSingleValue(BaseModel):
     color:str
@@ -67,35 +74,35 @@ class MultiSelectSingleValue(BaseModel):
     
 class MultiSelectPropertyValue(PropertyValue):
     format:Literal["multi_select"] = "multi_select"
-    multi_select: list[MultiSelectSingleValue]
+    multi_select: Optional[list[MultiSelectSingleValue]] = None
     
 class DatePropertyValue(PropertyValue):
     format:Literal["date"] = "date"
-    date:str
+    date:Optional[str]=None
     
 class FilesPropertyValue(PropertyValue):
     format:Literal["files"] = "files"
-    files:list[str]
+    files:Optional[list[str]]=None
     
 class CheckboxPropertyValue(PropertyValue):
     format:Literal["checkbox"] = "checkbox"
-    checkbox:bool
+    checkbox:bool = False
     
 class URLPropertyValue(PropertyValue):
     format:Literal["url"] = "url"
-    url:str
+    url:Optional[str]=None
     
 class EmailPropertyValue(PropertyValue):
-    format:str = "email"
-    email:str
+    format:Literal["email"] = "email"
+    email:Optional[str]=None
     
 class PhonePropertyValue(PropertyValue):
     format:Literal["phone"] = "phone"
-    phone:str
+    phone:Optional[str]=None
     
 class ObjectsPropertyValue(PropertyValue):
     format:Literal["objects"] = "objects"
-    objects:list[str]
+    objects:Optional[list[str]]=None
 
 PropertyValue_Bound = Annotated[Union[TextPropertyValue, NumberPropertyValue, SelectPropertyValue, MultiSelectPropertyValue, DatePropertyValue, FilesPropertyValue, CheckboxPropertyValue, URLPropertyValue, EmailPropertyValue, PhonePropertyValue, ObjectsPropertyValue], Field(discriminator="format")]
 
@@ -106,136 +113,7 @@ class PropertyCreate(BaseModel):
     
 class PropertyUpdate(BaseModel):
     key:Optional[str] = None
-    name:str
-    
-class PropertyLinkValue(BaseModel):
-    key:str
-    
-class TextPropertyLinkValue(PropertyLinkValue):
-    text:str
-    
-class NumberPropertyLinkValue(PropertyLinkValue):
-    number:int
-    
-class SelectPropertyLinkValue(PropertyLinkValue):
-    select:str
-    
-class MultiSelectPropertyLinkValue(PropertyLinkValue):
-    multi_select:list[str]
-    
-class DatePropertyLinkValue(PropertyLinkValue):
-    date:str
-    
-class FilesPropertyLinkValue(PropertyLinkValue):
-    files:list[str]
-    
-class CheckboxPropertyLinkValue(PropertyLinkValue):
-    checkbox:bool
-    
-class URLPropertyLinkValue(PropertyLinkValue):
-    url:str
-    
-class EmailPropertyLinkValue(PropertyLinkValue):
-    email:str
-    
-class PhonePropertyLinkValue(PropertyLinkValue):
-    phone:str
-    
-class ObjectsPropertyLinkValue(PropertyLinkValue):
-    objects:list[str]
-    
-PropertyLinkValue_Bound = TypeVar("PropertyLinkValue_Bound", bound=PropertyLinkValue)
-
-class ObjectCreate(BaseModel):
-    body:Optional[str] = None
-    icon:Optional[Icon_Bound] = None
     name:Optional[str] = None
-    properties:Optional[list[PropertyLinkValue_Bound]] = None
-    template_id:Optional[str] = None
-    type_key:str
-    
-    def addText(self, text:str) -> None:
-        
-        self.body += f"{text}\n"
-        
-    def addHeader(self, level:int, text:str) -> None:
-        if level not in (1, 2, 3):
-            raise RuntimeError("level should be 1, 2 or 3")
-        self.body += f"{'#' * level} {text}\n"
-        
-    def addDotListBlock(self) -> None:
-        self.body += f"\n+ "
-        
-    def addSplitLine(self) -> None:
-        self.body += f"\n---"
-        
-    def addDotSplitLine(self) -> None:
-        self.body += f"\n***"
-        
-    def addNumListBlock(self) -> None:
-        self.body += f"\n1. "
-        
-    def addCheckbox(self, text:str, checked:bool=False) -> None:
-        self.body += f"- [x] {text}\n" if checked else f"- [ ] {text}\n"
-        
-    def addBullet(self, text:str) -> None:
-        self.body += f"- {text}\n"
-        
-    def addCodeblock(self, language:str, code:str) -> None:
-        self.body += f"``` {language}\n{code}\n```\n"
-        
-    def add_image(self, image_url: str, alt: str = "", title: str = "") -> None:
-        if title:
-            self.body += f'![{alt}]({image_url} "{title}")\n'
-        else:
-            self.body += f"![{alt}]({image_url})\n"
-            
-    def addCodeInline(self, code:str) -> None:
-        self.body += f"**{code}**"
-        
-    def addBoldInline(self, text:str) -> None:
-        self.body += f"`{text}`"
-        
-    def addSlashInline(self, text:str) -> None:
-        self.body += f"*{text}*"
-        
-    def addDeleteInline(self, text:str) -> None:
-        self.body += f"~~{text}~~"
-        
-    def addRightArrowInline(self, text:str) -> None:
-        self.body += f"-->"
-        
-    def addLeftArrowInline(self, text:str) -> None:
-        self.body += f"<--"
-        
-    def addDoubleArrowInline(self, text:str) -> None:
-        self.body += f"<-->"
-        
-    def addShortLeftArrowInline(self, text:str) -> None:
-        self.body += f"<-"
-        
-    def addShortRightArrowInline(self, text:str) -> None:
-        self.body += f"->"
-        
-    def addLongDashInline(self, text:str) -> None:
-        self.body += f"--"
-        
-    def addCopyrightInline(self, text:str) -> None:
-        self.body += f"(c)"
-        
-    def addRegisterInline(self, text:str) -> None:
-        self.body += f"(r)"
-        
-    def addTrademarkInline(self, text:str) -> None:
-        self.body += f"(tm)"
-        
-    def addDotsInline(self, text:str) -> None:
-        self.body += f"..."
-        
-class ObjectUpdate(BaseModel):
-    icon: Optional[Icon_Bound] = None
-    name: str
-    properties: Optional[list[PropertyLinkValue_Bound]] = None
     
 class SpaceCreate(BaseModel):
     description:Optional[str] = None
@@ -246,8 +124,8 @@ class SpaceUpdate(BaseModel):
     name:Optional[str] = None
     
 class TagCreate(BaseModel):
-    color:str
-    name:str
+    color:Optional[str] = None
+    name:Optional[str] = None
     
 class TagUpdate(TagCreate):
     pass
@@ -310,4 +188,3 @@ class Sort(BaseModel):
     id:str
     property_key:str
     sort_type:str
-    

@@ -1,6 +1,21 @@
 from .anytype import Anytype
 from .member import Member, MemberSchema
-from .object import Object, ObjectSchema
+from .object import (TextProp,
+                     NumberProp,
+                     SelectProp,
+                     MultiSelectProp,
+                     DateProp,
+                     FilesProp,
+                     CheckboxProp,
+                     URLProp,
+                     EmailProp,
+                     PhoneProp,
+                     ObjectsProp,
+                     Object, 
+                     ObjectSchema,
+                     ObjectCreate,
+                     ObjectUpdate
+                    )
 from .property import Property, PropertySchema
 from .space import Space, SpaceSchema
 from .tag import Tag, TagSchema
@@ -11,8 +26,6 @@ from .view import View, ViewSchema
 from .block import (Block, File, Text)
 from .apimodels import (SpaceCreate,
                         SpaceUpdate,
-                        ObjectCreate,
-                        ObjectUpdate,
                         TagCreate,
                         TagUpdate,
                         PropertyCreate,
@@ -40,16 +53,5 @@ from .apimodels import (SpaceCreate,
                         EmailPropertyValue,
                         PhonePropertyValue,
                         ObjectsPropertyValue,
-                        
-                        TextPropertyLinkValue,
-                        NumberPropertyLinkValue,
-                        SelectPropertyLinkValue,
-                        MultiSelectPropertyLinkValue,
-                        DatePropertyLinkValue,
-                        FilesPropertyLinkValue,
-                        CheckboxPropertyLinkValue,
-                        URLPropertyLinkValue,
-                        EmailPropertyLinkValue,
-                        PhonePropertyLinkValue,
-                        ObjectsPropertyLinkValue
+                        PropertyValue_Bound,
 )

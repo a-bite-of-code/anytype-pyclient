@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
   {name = "MeiJie", email = "jie.mei1@qq.com"},
 ]
-license = {text = "MIT License"}
+license = {text = "MIT"}
 dependencies = [
     "requests",
     "pydantic"

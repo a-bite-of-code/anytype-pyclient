@@ -89,8 +89,8 @@ class AnytypePyClient:
     """
     def add_objects_to_list(self, space_id: str, list_id: str, objectIds: list[str]) -> str:
         api = f"spaces/{space_id}/lists/{list_id}/objects" 
-        payload = json.dumps(objectIds)
-        resp = self.api_endpoint.requestApi("POST", url=api, data=payload, params=params)
+        payload = json.dumps({"objects":objectIds})  
+        resp = self.api_endpoint.requestApi("POST", url=api, data=payload)
         if not resp:
             raise RuntimeError("object add failed.")
         return resp
@@ -178,8 +178,9 @@ class AnytypePyClient:
     def create_object(self, space_id: str, obj: object) -> Any:
         url = f"spaces/{space_id}/objects" 
         cleaned_dump = {k: v for k, v in obj.model_dump().items() if v is not None}
-        payload=json.dumps(cleaned_dump)
-        resp = self.api_endpoint("POST", url=url, data=payload)
+        #payload=json.dumps(cleaned_dump)
+        payload = json.dumps(cleaned_dump)
+        resp = self.api_endpoint.requestApi("POST", url=url, data=payload)
         data = resp.json().get("object")
         if not data:
             raise RuntimeError("no objects created.")
@@ -219,7 +220,7 @@ class AnytypePyClient:
     object_id    string    required
     The ID of the object to delete; must be retrieved from ListObjects, SearchSpace or GlobalSearch endpoints or obtained from response context
     """
-    def update_object(self, spaec_id:str, object_id:str, obj: object) -> Any:
+    def update_object(self, space_id:str, object_id:str, obj: object) -> Any:
         url = f"spaces/{space_id}/objects/{object_id}" 
         cleaned_dump = {k: v for k, v in obj.model_dump().items() if v is not None}
         payload=json.dumps(cleaned_dump)
@@ -308,9 +309,10 @@ class AnytypePyClient:
     property_id    string    required
     The ID of the property to delete; must be retrieved from ListProperties endpoint or obtained from response context
     """
-    def list_tags(self, space_id: str, property_id: str) -> Any:
+    def list_tags(self, space_id: str, property_id: str, offset:int=0, limit:int=100) -> Any:
         url = f"spaces/{space_id}/properties/{property_id}/tags" 
-        resp = self.api_endpoint.requestApi("GET", url)
+        params = {"offset":offset,"limit":limit}
+        resp = self.api_endpoint.requestApi("GET", url, params=params)
         return resp.json()
     """
     space_id    string    required
@@ -319,7 +321,7 @@ class AnytypePyClient:
     property_id    string    required
     The ID of the property to delete; must be retrieved from ListProperties endpoint or obtained from response context
     """
-    def create_tag(self, space_id: str, tag: object) -> Any:
+    def create_tag(self, space_id: str, property_id: str, tag: object) -> Any:
         url = f"spaces/{space_id}/properties/{property_id}/tags" 
         cleaned_dump = {k: v for k, v in tag.model_dump().items() if v is not None}
         payload=json.dumps(cleaned_dump)

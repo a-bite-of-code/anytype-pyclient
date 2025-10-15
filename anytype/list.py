@@ -10,7 +10,9 @@ class ATList(Object):
       collections, enabling users to dynamically manage their collections without needing to modify the underlying object data.
     """
     def addObjects(self, objectIds: list[str]) -> str:
-        return self._endpoint.add_objects_to_list(space_id=self.space_id, list_id=self.id, objectIds=objectIds)
+        orig = self._endpoint.add_objects_to_list(space_id=self.space_id, list_id=self.id, objectIds=objectIds)
+        
+        return orig
         
     """
     Removes a given object from the specified list (collection only) in a space. 
@@ -34,7 +36,6 @@ class ATList(Object):
         
         return ViewSchema(**orig)
         
-
 class ListSchema(Schema):
     data: list[ATList]
     
