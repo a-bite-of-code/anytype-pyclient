@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-# 方法2：跨平台兼容（推荐）
+
 sys.path.append(Path(__file__).parent.parent.as_posix())
 
 from anytype import (Anytype, 
